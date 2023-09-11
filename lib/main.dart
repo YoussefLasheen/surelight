@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:surelight/screens/main_screen/main_screen.dart';
 
 void main() {
@@ -7,9 +8,13 @@ void main() {
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.landscapeLeft,
     DeviceOrientation.landscapeRight,
-  ]).then((_) {
-    runApp(const MainApp());
-  });
+  ]).then(
+    (_) => runApp(
+      const ProviderScope(
+        child: MainApp(),
+      ),
+    ),
+  );
 }
 
 class MainApp extends StatelessWidget {

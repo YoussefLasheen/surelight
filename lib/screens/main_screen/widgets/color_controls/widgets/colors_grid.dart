@@ -1,17 +1,23 @@
-import 'package:flutter/material.dart';
-import 'package:hexagon/hexagon.dart';
+import 'dart:typed_data';
 
-class ColorsGrid extends StatefulWidget {
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hexagon/hexagon.dart';
+import 'package:surelight/providers/artnet_provider.dart';
+import 'package:surelight/providers/live_scene_provider.dart';
+
+class ColorsGrid extends ConsumerStatefulWidget {
   const ColorsGrid({super.key});
 
   @override
-  State<ColorsGrid> createState() => _ColorsGridState();
+  ConsumerState<ColorsGrid> createState() => _ColorsGridState();
 }
 
-class _ColorsGridState extends State<ColorsGrid> {
+class _ColorsGridState extends ConsumerState<ColorsGrid> {
   List<int> index = [0, 0];
   @override
   Widget build(BuildContext context) {
+    final liveScene = ref.watch(liveSceneProvider);
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: HexagonGrid.flat(
@@ -21,9 +27,11 @@ class _ColorsGridState extends State<ColorsGrid> {
           color: colors[coordinates.q]![coordinates.r],
         ),
         buildChild: (coordinates) {
+          final Color color = colors[coordinates.q]![coordinates.r]!;
           return GestureDetector(
             behavior: HitTestBehavior.translucent,
             onTap: () {
+              liveScene.toggleColor(color);
               setState(() {
                 index = [coordinates.q, coordinates.r];
               });

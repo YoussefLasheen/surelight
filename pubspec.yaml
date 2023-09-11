@@ -7,14 +7,19 @@ environment:
   sdk: '>=3.1.1 <4.0.0'
 
 dependencies:
+  complete_timer: ^1.0.0
   flutter:
     sdk: flutter
+  flutter_riverpod: ^2.4.0
   hexagon: ^0.2.0
+  udp: ^5.0.3
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^2.0.0
+  riverpod_lint: ^2.0.4
+  custom_lint: ^0.5.3
 
 flutter:
   uses-material-design: true
