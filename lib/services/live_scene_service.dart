@@ -11,17 +11,25 @@ class LiveScene {
   final Ref ref;
   LiveScene(this.ref);
 
-  late final ArtNet artNet;
-
   List<DRGBStep> steps = [];
 
   List<Color> colors = [];
 
-  Effect effect = Effect.cycle;
+  Effect effect = Effect.stop;
 
   int bpm = 120;
 
   CompleteTimer? timer;
+
+  void setEffect(Effect newEffect) {
+    effect = newEffect;
+    _restartCounter();
+  }
+
+  void setBPM(int newBPM) {
+    bpm = newBPM;
+    _restartCounter();
+  }
 
   void toggleColor(Color newColors) {
     if (colors.contains(newColors)) {
@@ -36,6 +44,9 @@ class LiveScene {
     switch (effect) {
       case Effect.cycle:
         steps = cycleEffect();
+      case Effect.stop:
+        steps = [];
+        return;
     }
 
     if (timer != null) {
@@ -44,7 +55,7 @@ class LiveScene {
 
     timer = CompleteTimer(
       duration: Duration(
-        seconds: 1,
+        milliseconds: (60000 / bpm).round(),
       ),
       periodic: true,
       callback: (b) {
@@ -99,4 +110,4 @@ class DRGBStep {
   List<int> get data => [r, g, b, d];
 }
 
-enum Effect { cycle }
+enum Effect { stop, cycle }

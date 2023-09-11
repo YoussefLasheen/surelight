@@ -14,7 +14,6 @@ class ColorsGrid extends ConsumerStatefulWidget {
 }
 
 class _ColorsGridState extends ConsumerState<ColorsGrid> {
-  List<int> index = [0, 0];
   @override
   Widget build(BuildContext context) {
     final liveScene = ref.watch(liveSceneProvider);
@@ -28,22 +27,28 @@ class _ColorsGridState extends ConsumerState<ColorsGrid> {
         ),
         buildChild: (coordinates) {
           final Color color = colors[coordinates.q]![coordinates.r]!;
+          final index = liveScene.colors.indexOf(color);
           return GestureDetector(
             behavior: HitTestBehavior.translucent,
             onTap: () {
               liveScene.toggleColor(color);
-              setState(() {
-                index = [coordinates.q, coordinates.r];
-              });
+              setState(() {});
             },
             child: SizedBox.expand(
-              child: Icon(
-                Icons.circle,
-                color:
-                    index.first == coordinates.q && index.last == coordinates.r
-                        ? Colors.black
-                        : Colors.transparent,
-              ),
+              child: index == -1
+                  ? const SizedBox.shrink()
+                  : Center(
+                      child: Text(
+                        index.toString(),
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 36,
+                          color: color.computeLuminance() > 0.5
+                              ? Colors.black
+                              : Colors.white,
+                        ),
+                      ),
+                    ),
             ),
           );
         },
@@ -54,8 +59,8 @@ class _ColorsGridState extends ConsumerState<ColorsGrid> {
 
 const colors = {
   -2: {
-    0: Colors.red,
-    1: Colors.redAccent,
+    0: Colors.white54,
+    1: Colors.white10,
     2: Colors.pink,
   },
   -1: {
@@ -75,7 +80,7 @@ const colors = {
     -2: Colors.green,
     -1: Colors.greenAccent,
     0: Colors.teal,
-    1: Colors.tealAccent,
+    1: Colors.black26,
   },
   2: {
     -2: Colors.yellow,
