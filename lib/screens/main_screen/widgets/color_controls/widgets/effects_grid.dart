@@ -28,7 +28,7 @@ class _EffectsGridState extends ConsumerState<EffectsGrid> {
               divisions: 15,
               label: liveScene.bpm.toString(),
               onChanged: (double value) {
-                liveScene.setBPM(value.toInt());
+                ref.watch(liveSceneProvider.notifier).setBPM(value.toInt());
                 setState(() {});
               },
             ),
@@ -47,7 +47,9 @@ class _EffectsGridState extends ConsumerState<EffectsGrid> {
                   color: selectedIndex == 0 ? Colors.red : null,
                   isPressed: selectedIndex == liveScene.effect.index,
                   onPressed: () {
-                    liveScene.setEffect(Effect.values[selectedIndex]);
+                    ref
+                        .watch(liveSceneProvider.notifier)
+                        .setEffect(Effect.values[selectedIndex]);
                     setState(() {});
                   },
                 );

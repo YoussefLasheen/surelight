@@ -7,41 +7,47 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:surelight/providers/artnet_provider.dart';
 import 'package:surelight/services/artnet.dart';
 
-class LiveScene {
+class LiveScene extends StateNotifier<LiveSceneSettings> {
   final Ref ref;
-  LiveScene(this.ref);
+  LiveScene(this.ref) : super(LiveSceneSettings.empty);
 
   List<DRGBStep> steps = [];
 
-  List<Color> colors = [];
+  // List<Color> colors = [];
 
-  Effect effect = Effect.stop;
+  // Effect effect = Effect.stop;
 
-  int bpm = 120;
+  // int bpm = 120;
 
   CompleteTimer? timer;
 
   void setEffect(Effect newEffect) {
-    effect = newEffect;
+    state = state.copyWith(effect: newEffect);
     _restartCounter();
   }
 
   void setBPM(int newBPM) {
-    bpm = newBPM;
+    state = state.copyWith(bpm: newBPM);
     _restartCounter();
   }
 
   void toggleColor(Color newColors) {
-    if (colors.contains(newColors)) {
-      colors.remove(newColors);
+    if (state.colors.contains(newColors)) {
+      // colors.remove(newColors);
+      state = state.copyWith(
+        colors: state.colors.where((element) => element != newColors).toList(),
+      );
     } else {
-      colors.add(newColors);
+      // colors.add(newColors);
+      state = state.copyWith(
+        colors: [...state.colors, newColors],
+      );
     }
     _restartCounter();
   }
 
   void _restartCounter() {
-    switch (effect) {
+    switch (state.effect) {
       case Effect.cycle:
         steps = cycleEffect();
       case Effect.stop:
@@ -55,7 +61,7 @@ class LiveScene {
 
     timer = CompleteTimer(
       duration: Duration(
-        milliseconds: (60000 / bpm).round(),
+        milliseconds: (60000 / state.bpm).round(),
       ),
       periodic: true,
       callback: (b) {
@@ -86,9 +92,14 @@ class LiveScene {
     );
   }
 
+  int colorIndex(Color color) => state.colors.indexOf(color);
+
+  get bpm => state.bpm;
+  get effect => state.effect;
+
   List<DRGBStep> cycleEffect() {
     List<DRGBStep> result =
-        colors.map((e) => DRGBStep(r: e.red, g: e.green, b: e.blue)).toList();
+        state.colors.map((e) => DRGBStep(r: e.red, g: e.green, b: e.blue)).toList();
 
     return result;
   }
@@ -111,3 +122,34 @@ class DRGBStep {
 }
 
 enum Effect { stop, cycle }
+
+class LiveSceneSettings {
+  final Effect effect;
+  final int bpm;
+  final List<Color> colors;
+
+  LiveSceneSettings({
+    required this.effect,
+    required this.bpm,
+    required this.colors,
+  });
+
+  LiveSceneSettings copyWith({
+    Effect? effect,
+    int? bpm,
+    List<Color>? colors,
+  }) {
+    return LiveSceneSettings(
+      effect: effect ?? this.effect,
+      bpm: bpm ?? this.bpm,
+      colors: colors ?? this.colors,
+    );
+  }
+
+  //Empty
+  static LiveSceneSettings get empty => LiveSceneSettings(
+        effect: Effect.stop,
+        bpm: 120,
+        colors: [],
+      );
+}

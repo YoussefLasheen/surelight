@@ -31,8 +31,7 @@ class _ColorsGridState extends ConsumerState<ColorsGrid> {
           return GestureDetector(
             behavior: HitTestBehavior.translucent,
             onTap: () {
-              liveScene.toggleColor(color);
-              setState(() {});
+              ref.watch(liveSceneProvider.notifier).toggleColor(color);
             },
             child: SizedBox.expand(
               child: index == -1
