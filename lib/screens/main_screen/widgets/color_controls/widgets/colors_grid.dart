@@ -38,7 +38,7 @@ class _ColorsGridState extends ConsumerState<ColorsGrid> {
                   ? const SizedBox.shrink()
                   : Center(
                       child: Text(
-                        index.toString(),
+                        (index + 1).toString(),
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 36,
