@@ -4,6 +4,8 @@ import 'dart:developer';
 import 'package:complete_timer/timer/complete_timer.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:surelight/const.dart';
+import 'package:surelight/models/Fixture/fixture.dart';
 import 'package:surelight/providers/artnet_provider.dart';
 import 'package:surelight/services/artnet.dart';
 
@@ -11,13 +13,14 @@ class LiveScene extends StateNotifier<LiveSceneSettings> {
   final Ref ref;
   LiveScene(this.ref) : super(LiveSceneSettings.empty);
 
-  List<DRGBStep> steps = [];
+  List<Step> steps = [];
 
-  // List<Color> colors = [];
-
-  // Effect effect = Effect.stop;
-
-  // int bpm = 120;
+  List<Fixture> fixtures = [
+    Fixture(data: basicFixture, startingChannel: 7),
+    Fixture(data: basicFixture, startingChannel: 14),
+    Fixture(data: basicFixture, startingChannel: 32),
+    Fixture(data: basicFixture, startingChannel: 50),
+  ];
 
   CompleteTimer? timer;
 
@@ -84,7 +87,8 @@ class LiveScene extends StateNotifier<LiveSceneSettings> {
     }
   }
 
-  void _setStep(DRGBStep step) {
+  void _setStep(Step step) {
+    log(step.data.toString());
     final artnet = ref.read(artNetProvider);
     artnet.sendOpOutput(
       data: Uint8List.fromList(step.data),
@@ -92,33 +96,34 @@ class LiveScene extends StateNotifier<LiveSceneSettings> {
     );
   }
 
-  int colorIndex(Color color) => state.colors.indexOf(color);
+  // int colorIndex(Color color) => state.colors.indexOf(color);
 
   get bpm => state.bpm;
   get effect => state.effect;
 
-  List<DRGBStep> cycleEffect() {
-    List<DRGBStep> result =
-        state.colors.map((e) => DRGBStep(r: e.red, g: e.green, b: e.blue)).toList();
+  List<Step> cycleEffect() {
+    List<Step> result = <Step>[];
+    for (var color in state.colors) {
+      List<int> data = List.filled(512, 0);
+      for (var fixture in fixtures) {
+        data.setAll(fixture.startingChannel, [
+          color.red,
+          color.green,
+          color.blue,
+          255,
+        ]);
+      }
+      result.add(Step(data: data));
+    }
 
     return result;
   }
 }
 
-class DRGBStep {
-  final int r;
-  final int g;
-  final int b;
-  final int d;
+class Step {
+  final List<int> data;
 
-  DRGBStep({
-    required this.r,
-    required this.g,
-    required this.b,
-    this.d = 255,
-  });
-
-  List<int> get data => [r, g, b, d];
+  Step({required this.data});
 }
 
 enum Effect { stop, cycle }
