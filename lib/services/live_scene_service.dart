@@ -142,7 +142,7 @@ class LiveScene extends StateNotifier<LiveSceneSettings> {
     return result;
   }
 
-  List<Step> cycleEffect() {
+  List<Step> chaseEffect() {
     List<Step> result = <Step>[];
     if (state.colors.isEmpty) {
       return result;
@@ -163,7 +163,7 @@ class LiveScene extends StateNotifier<LiveSceneSettings> {
     return result;
   }
 
-  List<Step> chaseEffect() {
+  List<Step> cycleEffect() {
     List<Step> result = <Step>[];
     if (state.colors.isEmpty) {
       return result;
