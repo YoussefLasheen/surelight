@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:developer';
 
 import 'package:complete_timer/timer/complete_timer.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:surelight/const.dart';
@@ -17,6 +18,7 @@ class LiveScene extends StateNotifier<LiveSceneSettings> {
 
   void setEffect(Effect newEffect) {
     state = state.copyWith(effect: newEffect);
+    if (newEffect == Effect.stop) state = state.copyWith(steps: []);
     _restartCounter();
   }
 
@@ -32,17 +34,21 @@ class LiveScene extends StateNotifier<LiveSceneSettings> {
   }) {
     final fixtureStartingChannel = state.fixtures[fixtureIndex].startingChannel;
     final channel = fixtureStartingChannel + channelIndex;
-    final newStep = currentStep.data;
+    final newStep = state.currentStep.data;
     newStep[channel] = value;
     state = state.copyWith(
       steps: [Step(data: newStep)],
       effect: Effect.stop,
     );
+    _restartCounter();
   }
 
   void toggleColor(Color newColors) {
     if (state.colors.contains(newColors)) {
       // colors.remove(newColors);
+      if (colors.length == 1) {
+        return;
+      }
       state = state.copyWith(
         colors: state.colors.where((element) => element != newColors).toList(),
       );
@@ -64,8 +70,6 @@ class LiveScene extends StateNotifier<LiveSceneSettings> {
       case Effect.chase:
         state = state.copyWith(steps: chaseEffect());
       case Effect.stop:
-        state = state.copyWith(steps: []);
-        return;
     }
 
     if (timer != null) {
@@ -79,6 +83,7 @@ class LiveScene extends StateNotifier<LiveSceneSettings> {
       periodic: true,
       callback: (b) {
         if (state.steps.isEmpty) {
+          log('NO STEPS');
           return;
         }
         log('BEAT ${b.tick}');
@@ -114,13 +119,6 @@ class LiveScene extends StateNotifier<LiveSceneSettings> {
   get bpm => state.bpm;
   get effect => state.effect;
   get colors => state.colors;
-  // get fixtures => state.fixtures;
-  Step get currentStep {
-    if (timer == null) {
-      return state.steps[0];
-    }
-    return state.steps[timer!.tick % state.steps.length];
-  }
 
   List<Step> constantEffect() {
     List<Step> result = <Step>[];
@@ -231,7 +229,11 @@ class LiveSceneSettings {
   static LiveSceneSettings get empty => LiveSceneSettings(
         effect: Effect.stop,
         bpm: 120,
-        colors: [],
+        colors: [
+          Colors.blue,
+          Colors.red,
+          Colors.green,
+        ],
         steps: [],
         fixtures: builtInfixtures,
         tick: 0,
