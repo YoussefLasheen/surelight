@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:surelight/screens/main_screen/main_screen.dart';
+import 'package:surelight/root.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -25,7 +25,7 @@ class MainApp extends StatelessWidget {
     return MaterialApp(
       theme: ThemeData.dark(useMaterial3: true),
       debugShowCheckedModeBanner: false,
-      home: const MainScreen(),
+      home: const Root(),
     );
   }
 }

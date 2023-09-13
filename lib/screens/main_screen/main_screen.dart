@@ -16,42 +16,32 @@ class _MainScreenState extends State<MainScreen> {
   Widget build(BuildContext context) {
     return Material(
       color: Colors.black,
-      child: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.only(bottom: 34),
-          child: Column(
-            children: [
-              Expanded(
-                child: Container(
-                  color: Colors.black,
+      child: Column(
+        children: [
+          Spacer(),
+          Expanded(
+            flex: 4,
+            child: ListView(
+              scrollDirection: Axis.horizontal,
+              shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(),
+              children: const [
+                ColorControls(),
+                SizedBox(
+                  width: 20,
                 ),
-              ),
-              Expanded(
-                flex: 4,
-                child: ListView(
-                  scrollDirection: Axis.horizontal,
-                  children: const [
-                    SizedBox(
-                      width: 42,
-                    ),
-                    ColorControls(),
-                    SizedBox(
-                      width: 20,
-                    ),
-                    MovementControls(),
-                    SizedBox(
-                      width: 20,
-                    ),
-                    LivePresets(),
-                    SizedBox(
-                      width: 20,
-                    ),
-                  ],
+                MovementControls(),
+                SizedBox(
+                  width: 20,
                 ),
-              ),
-            ],
+                LivePresets(),
+                SizedBox(
+                  width: 20,
+                ),
+              ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }
