@@ -51,8 +51,12 @@ class LiveScene extends StateNotifier<LiveSceneSettings> {
 
   void _restartCounter() {
     switch (state.effect) {
+      case Effect.constant:
+        steps = constantEffect();
       case Effect.cycle:
         steps = cycleEffect();
+      case Effect.chase:
+        steps = chaseEffect();
       case Effect.stop:
         steps = [];
         return;
@@ -101,8 +105,52 @@ class LiveScene extends StateNotifier<LiveSceneSettings> {
   get bpm => state.bpm;
   get effect => state.effect;
 
+  List<Step> constantEffect() {
+    List<Step> result = <Step>[];
+    if (state.colors.isEmpty) {
+      return result;
+    }
+    List<int> data = List.filled(512, 0);
+    Color color = state.colors.last;
+    for (var fixture in fixtures) {
+      data.setAll(fixture.startingChannel, [
+        color.red,
+        color.green,
+        color.blue,
+        255,
+      ]);
+      result.add(Step(data: data));
+    }
+
+    return result;
+  }
+
   List<Step> cycleEffect() {
     List<Step> result = <Step>[];
+    if (state.colors.isEmpty) {
+      return result;
+    }
+    for (var color in state.colors) {
+      for (var fixture in fixtures) {
+        List<int> data = List.filled(512, 0);
+        data.setAll(fixture.startingChannel, [
+          color.red,
+          color.green,
+          color.blue,
+          255,
+        ]);
+        result.add(Step(data: data));
+      }
+    }
+
+    return result;
+  }
+
+  List<Step> chaseEffect() {
+    List<Step> result = <Step>[];
+    if (state.colors.isEmpty) {
+      return result;
+    }
     for (var color in state.colors) {
       List<int> data = List.filled(512, 0);
       for (var fixture in fixtures) {
@@ -112,8 +160,8 @@ class LiveScene extends StateNotifier<LiveSceneSettings> {
           color.blue,
           255,
         ]);
+        result.add(Step(data: data));
       }
-      result.add(Step(data: data));
     }
 
     return result;
@@ -126,7 +174,7 @@ class Step {
   Step({required this.data});
 }
 
-enum Effect { stop, cycle }
+enum Effect { stop, constant, cycle, chase }
 
 class LiveSceneSettings {
   final Effect effect;
