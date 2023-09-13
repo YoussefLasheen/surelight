@@ -1,5 +1,5 @@
-import 'package:surelight/models/Fixture/basic_light_fixture.dart';
-import 'package:surelight/models/Fixture/fixture_data.dart';
+import 'package:surelight/models/fixture/basic_light_fixture.dart';
+import 'package:surelight/models/fixture/fixture_data.dart';
 
 FixtureData basicFixture = BasicLightFixture(
   numberOfChannels: 8,

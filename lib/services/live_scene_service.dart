@@ -5,7 +5,7 @@ import 'package:complete_timer/timer/complete_timer.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:surelight/const.dart';
-import 'package:surelight/models/Fixture/fixture.dart';
+import 'package:surelight/models/fixture/fixture.dart';
 import 'package:surelight/providers/artnet_provider.dart';
 import 'package:surelight/services/artnet.dart';
 

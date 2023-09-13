@@ -1,4 +1,4 @@
-import 'package:surelight/models/Fixture/fixture_data.dart';
+import 'package:surelight/models/fixture/fixture_data.dart';
 
 class Fixture {
   final int startingChannel;
