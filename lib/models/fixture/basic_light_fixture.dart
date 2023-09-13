@@ -14,5 +14,6 @@ class BasicLightFixture extends FixtureData {
     required this.dimmerOffset,
     required this.strobeOffset,
     required super.numberOfChannels,
+    required super.name,
   });
 }

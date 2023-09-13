@@ -2,6 +2,7 @@ import 'package:surelight/models/fixture/basic_light_fixture.dart';
 import 'package:surelight/models/fixture/fixture_data.dart';
 
 FixtureData basicFixture = BasicLightFixture(
+  name: 'Basic Light',
   numberOfChannels: 8,
   redOffset: 0,
   greenOffset: 1,

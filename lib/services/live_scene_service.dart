@@ -13,15 +13,6 @@ class LiveScene extends StateNotifier<LiveSceneSettings> {
   final Ref ref;
   LiveScene(this.ref) : super(LiveSceneSettings.empty);
 
-  List<Step> steps = [];
-
-  List<Fixture> fixtures = [
-    Fixture(data: basicFixture, startingChannel: 7),
-    Fixture(data: basicFixture, startingChannel: 14),
-    Fixture(data: basicFixture, startingChannel: 32),
-    Fixture(data: basicFixture, startingChannel: 50),
-  ];
-
   CompleteTimer? timer;
 
   void setEffect(Effect newEffect) {
@@ -32,6 +23,21 @@ class LiveScene extends StateNotifier<LiveSceneSettings> {
   void setBPM(int newBPM) {
     state = state.copyWith(bpm: newBPM);
     _restartCounter();
+  }
+
+  void setFixtureChannelValue({
+    required int fixtureIndex,
+    required int channelIndex,
+    required int value,
+  }) {
+    final fixtureStartingChannel = state.fixtures[fixtureIndex].startingChannel;
+    final channel = fixtureStartingChannel + channelIndex;
+    final newStep = currentStep.data;
+    newStep[channel] = value;
+    state = state.copyWith(
+      steps: [Step(data: newStep)],
+      effect: Effect.stop,
+    );
   }
 
   void toggleColor(Color newColors) {
@@ -52,13 +58,13 @@ class LiveScene extends StateNotifier<LiveSceneSettings> {
   void _restartCounter() {
     switch (state.effect) {
       case Effect.constant:
-        steps = constantEffect();
+        state = state.copyWith(steps: constantEffect());
       case Effect.cycle:
-        steps = cycleEffect();
+        state = state.copyWith(steps: cycleEffect());
       case Effect.chase:
-        steps = chaseEffect();
+        state = state.copyWith(steps: chaseEffect());
       case Effect.stop:
-        steps = [];
+        state = state.copyWith(steps: []);
         return;
     }
 
@@ -72,11 +78,13 @@ class LiveScene extends StateNotifier<LiveSceneSettings> {
       ),
       periodic: true,
       callback: (b) {
-        if (steps.isEmpty) {
+        if (state.steps.isEmpty) {
           return;
         }
         log('BEAT ${b.tick}');
-        _setStep(steps[b.tick % steps.length]);
+        int tick = b.tick % state.steps.length;
+        state = state.copyWith(tick: tick);
+        _setStep();
       },
     );
 
@@ -91,7 +99,8 @@ class LiveScene extends StateNotifier<LiveSceneSettings> {
     }
   }
 
-  void _setStep(Step step) {
+  void _setStep() {
+    Step step = state.steps[state.tick];
     log(step.data.toString());
     final artnet = ref.read(artNetProvider);
     artnet.sendOpOutput(
@@ -104,6 +113,14 @@ class LiveScene extends StateNotifier<LiveSceneSettings> {
 
   get bpm => state.bpm;
   get effect => state.effect;
+  get colors => state.colors;
+  // get fixtures => state.fixtures;
+  Step get currentStep {
+    if (timer == null) {
+      return state.steps[0];
+    }
+    return state.steps[timer!.tick % state.steps.length];
+  }
 
   List<Step> constantEffect() {
     List<Step> result = <Step>[];
@@ -112,7 +129,7 @@ class LiveScene extends StateNotifier<LiveSceneSettings> {
     }
     List<int> data = List.filled(512, 0);
     Color color = state.colors.last;
-    for (var fixture in fixtures) {
+    for (var fixture in state.fixtures) {
       data.setAll(fixture.startingChannel, [
         color.red,
         color.green,
@@ -131,7 +148,7 @@ class LiveScene extends StateNotifier<LiveSceneSettings> {
       return result;
     }
     for (var color in state.colors) {
-      for (var fixture in fixtures) {
+      for (var fixture in state.fixtures) {
         List<int> data = List.filled(512, 0);
         data.setAll(fixture.startingChannel, [
           color.red,
@@ -153,7 +170,7 @@ class LiveScene extends StateNotifier<LiveSceneSettings> {
     }
     for (var color in state.colors) {
       List<int> data = List.filled(512, 0);
-      for (var fixture in fixtures) {
+      for (var fixture in state.fixtures) {
         data.setAll(fixture.startingChannel, [
           color.red,
           color.green,
@@ -180,22 +197,33 @@ class LiveSceneSettings {
   final Effect effect;
   final int bpm;
   final List<Color> colors;
+  final List<Fixture> fixtures;
+  final List<Step> steps;
+  final int tick;
 
   LiveSceneSettings({
     required this.effect,
     required this.bpm,
     required this.colors,
+    required this.fixtures,
+    required this.steps,
+    required this.tick,
   });
 
-  LiveSceneSettings copyWith({
-    Effect? effect,
-    int? bpm,
-    List<Color>? colors,
-  }) {
+  LiveSceneSettings copyWith(
+      {Effect? effect,
+      int? bpm,
+      List<Color>? colors,
+      List<Fixture>? fixtures,
+      List<Step>? steps,
+      int? tick}) {
     return LiveSceneSettings(
       effect: effect ?? this.effect,
       bpm: bpm ?? this.bpm,
       colors: colors ?? this.colors,
+      fixtures: fixtures ?? this.fixtures,
+      steps: steps ?? this.steps,
+      tick: tick ?? this.tick,
     );
   }
 
@@ -204,5 +232,22 @@ class LiveSceneSettings {
         effect: Effect.stop,
         bpm: 120,
         colors: [],
+        steps: [],
+        fixtures: builtInfixtures,
+        tick: 0,
       );
+
+  Step get currentStep {
+    if (steps.isEmpty) {
+      return Step(data: List.filled(512, 0));
+    }
+    return steps[tick % steps.length];
+  }
 }
+
+List<Fixture> builtInfixtures = [
+  Fixture(data: basicFixture, startingChannel: 7),
+  Fixture(data: basicFixture, startingChannel: 15),
+  Fixture(data: basicFixture, startingChannel: 32),
+  Fixture(data: basicFixture, startingChannel: 50),
+];
