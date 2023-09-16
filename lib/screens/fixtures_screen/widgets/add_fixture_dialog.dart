@@ -52,7 +52,7 @@ class AddFixtureDialog extends ConsumerWidget {
                       max: 512,
                       value: 1,
                       onChanged: (value) {
-                        startingChannel = (value as int) - 1;
+                        startingChannel = (value.toInt()) - 1;
                       },
                     ),
                   ),

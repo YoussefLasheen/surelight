@@ -11,4 +11,9 @@ class Fixture {
       required this.id,
       required this.startingChannel,
       required this.data});
+
+  get endingChannel {
+    if (startingChannel == 0) return data.numberOfChannels - 1;
+    return startingChannel + data.numberOfChannels - 1;
+  }
 }

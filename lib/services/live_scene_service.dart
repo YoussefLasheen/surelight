@@ -49,13 +49,18 @@ class LiveScene extends StateNotifier<LiveSceneSettings> {
     if (fixture.name.isEmpty) {
       throw 'Fixture name cannot be empty';
     }
-
     // Check if channel range is available
-    if (state.fixtures.any((element) =>
-        startingChannel >= element.startingChannel &&
-        startingChannel <=
-            element.startingChannel + element.data.numberOfChannels)) {
-      throw 'Channel range is not available';
+    final endingChannel = startingChannel + fixture.numberOfChannels - 1;
+    final isOverlapping = state.fixtures.any((element) {
+      bool start = startingChannel >= element.startingChannel &&
+          startingChannel <= element.endingChannel;
+      bool end = endingChannel >= element.startingChannel &&
+          endingChannel <= element.endingChannel;
+      return start || end;
+    });
+
+    if (isOverlapping) {
+      throw 'Channel range is overlapping with an existing fixture';
     }
 
     var newState = state.copyWith(
