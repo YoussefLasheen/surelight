@@ -14,56 +14,56 @@ class _RootState extends State<Root> {
   int index = 0;
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 25),
-      child: Row(
-        children: [
-          Column(
+    return SafeArea(
+      child: Scaffold(
+        backgroundColor: Colors.black,
+        body: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 25),
+          child: Row(
             children: [
-              Spacer(),
-              Expanded(
-                flex: 4,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(15),
-                    child: NavigationRail(
-                      selectedIndex: index,
-                      onDestinationSelected: (int newIndex) {
-                        setState(() {
-                          index = newIndex;
-                        });
-                      },
-                      labelType: NavigationRailLabelType.none,
-                      minWidth: 75,
-                      destinations: const [
-                        NavigationRailDestination(
-                          icon: Icon(Icons.home),
-                          label: Text('Live'),
-                          padding: EdgeInsets.all(10),
-                        ),
-                        NavigationRailDestination(
-                          icon: Icon(Icons.lightbulb),
-                          label: Text('Fixtures'),
-                          padding: EdgeInsets.all(10),
-                        ),
-                      ],
+              SizedBox(
+                width: 15,
+              ),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(15),
+                child: NavigationRail(
+                  selectedIndex: index,
+                  onDestinationSelected: (int newIndex) {
+                    setState(() {
+                      index = newIndex;
+                    });
+                  },
+                  labelType: NavigationRailLabelType.none,
+                  minWidth: 75,
+                  destinations: const [
+                    NavigationRailDestination(
+                      icon: Icon(Icons.home),
+                      label: Text('Live'),
+                      padding: EdgeInsets.all(10),
                     ),
-                  ),
+                    NavigationRailDestination(
+                      icon: Icon(Icons.lightbulb),
+                      label: Text('Fixtures'),
+                      padding: EdgeInsets.all(10),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(
+                width: 20,
+              ),
+              Expanded(
+                child: IndexedStack(
+                  index: index,
+                  children: [
+                    const MainScreen(),
+                    const FixturesScreen(),
+                  ],
                 ),
               ),
             ],
           ),
-          Expanded(
-            child: IndexedStack(
-              index: index,
-              children: [
-                const MainScreen(),
-                const FixturesScreen(),
-              ],
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
