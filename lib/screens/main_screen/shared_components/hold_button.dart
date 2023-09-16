@@ -33,12 +33,14 @@ class HoldButton extends StatelessWidget {
       ),
       child: Align(
         alignment: Alignment.bottomCenter,
-        child: Text(
-          title,
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w300,
-            color: color ?? Colors.white,
+        child: FittedBox(
+          child: Text(
+            title,
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w300,
+              color: color ?? Colors.white,
+            ),
           ),
         ),
       ),
