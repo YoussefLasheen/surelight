@@ -18,8 +18,6 @@ class _MainScreenState extends State<MainScreen> {
       color: Colors.black,
       child: ListView(
         scrollDirection: Axis.horizontal,
-        shrinkWrap: true,
-        physics: NeverScrollableScrollPhysics(),
         children: const [
           ColorControls(),
           SizedBox(
