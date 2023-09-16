@@ -9,6 +9,7 @@ import 'package:surelight/const.dart';
 import 'package:surelight/models/fixture/fixture.dart';
 import 'package:surelight/models/fixture/fixture_data.dart';
 import 'package:surelight/providers/artnet_provider.dart';
+import 'package:surelight/providers/settings_provider.dart';
 import 'package:surelight/services/artnet.dart';
 
 class LiveScene extends StateNotifier<LiveSceneSettings> {
@@ -150,9 +151,10 @@ class LiveScene extends StateNotifier<LiveSceneSettings> {
     Step step = state.steps[state.tick];
     log(step.data.toString());
     final artnet = ref.read(artNetProvider);
+    final settings = ref.read(settingsProvider);
     artnet.sendOpOutput(
       data: Uint8List.fromList(step.data),
-      ip: '192.168.1.100',
+      ip: settings.ip,
     );
   }
 

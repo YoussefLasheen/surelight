@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:surelight/screens/settings_screen/settings_screen.dart';
 
 import 'screens/fixtures_screen/fixtures_screen.dart';
 import 'screens/main_screen/main_screen.dart';
@@ -17,6 +18,7 @@ class _RootState extends State<Root> {
     return SafeArea(
       child: Scaffold(
         backgroundColor: Colors.black,
+        resizeToAvoidBottomInset: false,
         body: Padding(
           padding: const EdgeInsets.symmetric(vertical: 25),
           child: Row(
@@ -46,6 +48,11 @@ class _RootState extends State<Root> {
                       label: Text('Fixtures'),
                       padding: EdgeInsets.all(10),
                     ),
+                    NavigationRailDestination(
+                      icon: Icon(Icons.settings),
+                      label: Text('Settings'),
+                      padding: EdgeInsets.all(10),
+                    ),
                   ],
                 ),
               ),
@@ -55,9 +62,10 @@ class _RootState extends State<Root> {
               Expanded(
                 child: IndexedStack(
                   index: index,
-                  children: [
-                    const MainScreen(),
-                    const FixturesScreen(),
+                  children: const [
+                    MainScreen(),
+                    FixturesScreen(),
+                    SettingsScreen(),
                   ],
                 ),
               ),
