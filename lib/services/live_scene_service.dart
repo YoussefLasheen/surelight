@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:surelight/const.dart';
 import 'package:surelight/models/fixture/fixture.dart';
+import 'package:surelight/models/fixture/fixture_data.dart';
 import 'package:surelight/providers/artnet_provider.dart';
 import 'package:surelight/services/artnet.dart';
 
@@ -43,6 +44,44 @@ class LiveScene extends StateNotifier<LiveSceneSettings> {
     _restartCounter();
   }
 
+  void addFixture(FixtureData fixture, int startingChannel, String name) {
+    if (fixture.name.isEmpty) {
+      throw 'Fixture name cannot be empty';
+    }
+
+    // Check if channel range is available
+    if (state.fixtures.any((element) =>
+        startingChannel >= element.startingChannel &&
+        startingChannel <=
+            element.startingChannel + element.data.numberOfChannels)) {
+      throw 'Channel range is not available';
+    }
+
+    var newState = state.copyWith(
+      fixtures: [
+        ...state.fixtures,
+        Fixture(
+          startingChannel: startingChannel,
+          data: fixture,
+          id: DateTime.now().toString(),
+          name: name,
+        )
+      ],
+    );
+    newState.fixtures
+        .sort((a, b) => a.startingChannel.compareTo(b.startingChannel));
+    state = newState;
+
+    _restartCounter();
+  }
+
+  void removeFixture(String id) {
+    state = state.copyWith(
+      fixtures: state.fixtures.where((element) => element.id != id).toList(),
+    );
+    _restartCounter();
+  }
+
   void toggleColor(Color newColors) {
     if (state.colors.contains(newColors)) {
       // colors.remove(newColors);
@@ -62,6 +101,9 @@ class LiveScene extends StateNotifier<LiveSceneSettings> {
   }
 
   void _restartCounter() {
+    if (state.fixtures.isEmpty) {
+      return;
+    }
     switch (state.effect) {
       case Effect.constant:
         state = state.copyWith(steps: constantEffect());
@@ -110,7 +152,7 @@ class LiveScene extends StateNotifier<LiveSceneSettings> {
     final artnet = ref.read(artNetProvider);
     artnet.sendOpOutput(
       data: Uint8List.fromList(step.data),
-      ip: '192.168.1.9',
+      ip: '192.168.1.100',
     );
   }
 
@@ -248,8 +290,5 @@ class LiveSceneSettings {
 }
 
 List<Fixture> builtInfixtures = [
-  Fixture(data: basicFixture, startingChannel: 7),
-  Fixture(data: basicFixture, startingChannel: 15),
-  Fixture(data: basicFixture, startingChannel: 32),
-  Fixture(data: basicFixture, startingChannel: 50),
+  Fixture(name: 'Fixture 1', id: '1', data: basicFixture, startingChannel: 7),
 ];

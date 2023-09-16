@@ -10,3 +10,22 @@ FixtureData basicFixture = BasicLightFixture(
   dimmerOffset: 3,
   strobeOffset: 4,
 );
+
+
+FixtureData RGBD = BasicLightFixture(
+  name: 'RGBD',
+  numberOfChannels: 4,
+  redOffset: 0,
+  greenOffset: 1,
+  blueOffset: 2,
+  dimmerOffset: 3,
+);
+
+FixtureData DRGB = BasicLightFixture(
+  name: 'DRGB',
+  numberOfChannels: 4,
+  redOffset: 0,
+  greenOffset: 1,
+  blueOffset: 2,
+  dimmerOffset: 3,
+);
