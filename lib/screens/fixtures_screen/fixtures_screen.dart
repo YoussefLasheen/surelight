@@ -31,7 +31,8 @@ class _FixturesScreenState extends ConsumerState<FixturesScreen> {
                     borderRadius: BorderRadius.circular(15),
                   ),
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    padding:
+                        const EdgeInsets.only(right: 10, left: 10, top: 10),
                     child: ListView.separated(
                       itemCount: liveScene.fixtures.length,
                       separatorBuilder: (context, index) => const SizedBox(
