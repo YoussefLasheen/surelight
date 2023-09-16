@@ -17,9 +17,9 @@ class _FixturesScreenState extends ConsumerState<FixturesScreen> {
   @override
   Widget build(BuildContext context) {
     final liveScene = ref.watch(liveSceneProvider);
-    return Scaffold(
-      backgroundColor: Colors.black,
-      body: Row(
+    return Material(
+      color: Colors.black,
+      child: Row(
         children: [
           Expanded(
             child: Stack(
